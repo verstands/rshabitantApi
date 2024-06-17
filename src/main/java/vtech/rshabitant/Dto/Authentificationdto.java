@@ -1,5 +1,5 @@
 package vtech.rshabitant.Dto;
 
-public record Authentificationdto(String email, String password) {
+public record Authentificationdto(String username, String password) {
     
 }

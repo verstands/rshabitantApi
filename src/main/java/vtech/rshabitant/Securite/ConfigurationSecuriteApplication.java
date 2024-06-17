@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,17 +22,16 @@ public class ConfigurationSecuriteApplication {
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return
-                httpSecurity
-                        .csrf(AbstractHttpConfigurer::disable)
-                        .authorizeHttpRequests(
-                            authorize ->
-                                authorize
-                                    .requestMatchers(HttpMethod.POST, "/agent").permitAll()
-                                    .requestMatchers(HttpMethod.POST, "/auth").permitAll()
-                                    .anyRequest().authenticated()
-                        ).build();
+        return httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorize -> 
+                        authorize
+                            .requestMatchers(HttpMethod.POST, "/agent").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/agent/auth").permitAll() 
+                            .anyRequest().authenticated()
+                ).build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); 
@@ -42,16 +42,10 @@ public class ConfigurationSecuriteApplication {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public CustomUserDetailsService customUserDetailsService() {
-        return new CustomUserDetailsService(null);
-    }
-
     @Bean 
-
-    public DaoAuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(CustomUserDetailsService customUserDetailsService) {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(customUserDetailsService());
+        daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }

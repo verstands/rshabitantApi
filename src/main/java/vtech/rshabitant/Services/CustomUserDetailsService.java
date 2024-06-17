@@ -1,24 +1,24 @@
 package vtech.rshabitant.Services;
 
-import vtech.rshabitant.Models.Agent;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.stereotype.Service;
 import vtech.rshabitant.Repository.AgentRepository;
 
 @AllArgsConstructor
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final AgentRepository agentRepository;
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Agent agent = agentRepository.findByEmail(email);
-        if (agent == null) {
-            throw new UsernameNotFoundException("L'utilisateur avec cette email n'existe pas : " + email);
-        }
-        return agent;
-    }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return this.agentRepository
+            .findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Aucun utilisateur ne correspond à cet identifiant"));
+    }
 }

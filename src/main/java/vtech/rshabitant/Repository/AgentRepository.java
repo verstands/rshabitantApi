@@ -1,8 +1,10 @@
 package vtech.rshabitant.Repository;
 
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 
 import vtech.rshabitant.Models.Agent;
 public interface  AgentRepository extends CrudRepository<Agent, Integer>  {
-    Agent findByEmail(String email);
+    Optional<Agent> findByEmail(String email);
 }

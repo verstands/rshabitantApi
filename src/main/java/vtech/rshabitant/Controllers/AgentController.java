@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import vtech.rshabitant.Dto.Authentificationdto;
 import vtech.rshabitant.Models.Agent;
+import vtech.rshabitant.Securite.JwtService;
 import vtech.rshabitant.Services.AgentService;
 
 @RestController
@@ -23,7 +24,10 @@ public class AgentController {
     private AgentService agentService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping
     public ResponseEntity<Agent> createAgent(@RequestBody Agent agent) {
@@ -33,17 +37,19 @@ public class AgentController {
         return ResponseEntity.ok(savedAgent);
     }
 
-    @PostMapping(path = "auth")
+    @PostMapping(path = "/auth") 
     public Map<String, String> auth(@RequestBody Authentificationdto authentificationdto) {
-        Map<String, String> response = new HashMap<>();
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authentificationdto.email(),
-                            authentificationdto.password()));
-            response.put("message", "Authentification réussie");
-        } catch (Exception e) {
-            response.put("message", "Erreur d'authentification: " + e.getMessage());
+        Map<String, Boolean> response = new HashMap<>();
+        final Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authentificationdto.username(),
+                                                       authentificationdto.password()));
+        if(authentication.isAuthenticated()){
+           return  this.jwtService.generate(authentificationdto.username());
+        }else{
+            response.put("Erreur", authentication.isAuthenticated());
+
         }
-        return response;
+        response.put("isAuthenticated", authentication.isAuthenticated());
+        return null;
     }
 }
