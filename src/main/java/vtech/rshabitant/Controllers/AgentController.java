@@ -44,10 +44,9 @@ public class AgentController {
                 new UsernamePasswordAuthenticationToken(authentificationdto.username(),
                                                        authentificationdto.password()));
         if(authentication.isAuthenticated()){
-           return  this.jwtService.generate(authentificationdto.username());
+          // return  this.jwtService.generate(authentificationdto.username());
         }else{
             response.put("Erreur", authentication.isAuthenticated());
-
         }
         response.put("isAuthenticated", authentication.isAuthenticated());
         return null;

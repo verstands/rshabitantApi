@@ -31,7 +31,7 @@ public class JwtService {
         Agent agent = (Agent) userDetails;
         
         String token = generateTokenForAgent(agent);
-        return Map.of("bearer", token);
+        return Map.of("Bearer", token);
     }
 
     private String generateTokenForAgent(Agent agent) {
